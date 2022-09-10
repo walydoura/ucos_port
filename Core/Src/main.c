@@ -128,7 +128,6 @@ void start_task(void *args);          //任务函数
    /* USER CODE BEGIN WHILE */
    OSCfg_Init();
    OSInit(&err);
-   OSSchedRoundRobinCfg(OS_TRUE, 200, &err);
 
    CPU_CRITICAL_ENTER();                                                                 //进入临界�???
    OSTaskCreate((OS_TCB *)&start_task_tcb,                                               //任务控制
@@ -303,14 +302,11 @@ void start_task(void *args)
 void led1_task(void *args)
 {
   OS_ERR err;
-  uint32_t i = 0;
 
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);   // LED1对应引脚PB0拉高，灭，等同于LED1(1)
   while (1)
   {
-    while(i++ != 0xFFFFFF);
-    i = 0;
-    //OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_HMSM_STRICT, &err);
+    OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_HMSM_STRICT, &err);
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
   }
 }
@@ -319,14 +315,11 @@ void led1_task(void *args)
 void led2_task(void *args)
 {
   OS_ERR err;
-  uint32_t i = 0;
 
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET); // LED0对应引脚PB1拉低，亮，等同于LED0(0)
   while (1)
   {
-    while (i++ != 0xFFFFFF);
-    i = 0;
-    //OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_HMSM_STRICT, &err);
+    OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_HMSM_STRICT, &err);
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
   }
 }
