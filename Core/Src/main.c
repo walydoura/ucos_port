@@ -44,99 +44,117 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-#define LED_TASK_PRIO 3
-//任务堆栈大小
-#define LED_STK_SIZE 512
-                        //任务控制�???
-                        OS_TCB LedTaskTCB;
-//任务堆栈
-CPU_STK LED_TASK_STK[LED_STK_SIZE];
 
-void led_task(void *args);
-/* USER CODE END PV */
+#define START_TASK_PRIO 0             //任务优先级
+#define START_STK_SIZE 256            //任务堆栈大小
+OS_TCB start_task_tcb;                  //任务控制块
+CPU_STK start_task_stk[START_STK_SIZE]; //任务堆栈
+void start_task(void *args);          //任务函数
 
-/* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-/* USER CODE BEGIN PFP */
+//#define LED_TASK_PRIO 1             //任务优先级
+//#define LED_STK_SIZE 128            //任务堆栈大小
+//OS_TCB LedTaskTCB;                  //任务控制块
+//CPU_STK LED_TASK_STK[LED_STK_SIZE]; //任务堆栈
+//void led_task(void *args);          //任务函数
 
-/* USER CODE END PFP */
+#define LED1_TASK_PRIO 1             //任务优先级
+#define LED1_STK_SIZE 128            //任务堆栈大小
+ OS_TCB Led1TaskTCB;                  //任务控制块
+ CPU_STK LED1_TASK_STK[LED1_STK_SIZE]; //任务堆栈
+ void led1_task(void *args);          //任务函数
 
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
 
-/* USER CODE END 0 */
+#define LED2_TASK_PRIO 1              //任务优先级
+#define LED2_STK_SIZE 128             //任务堆栈大小
+ OS_TCB Led2TaskTCB;                  //任务控制块
+ CPU_STK LED2_TASK_STK[LED2_STK_SIZE]; //任务堆栈
+ void led2_task(void *args);          //任务函数
 
-/**
+ /* USER CODE END PV */
+
+ /* Private function prototypes -----------------------------------------------*/
+ void SystemClock_Config(void);
+ static void MX_GPIO_Init(void);
+ /* USER CODE BEGIN PFP */
+
+ /* USER CODE END PFP */
+
+ /* Private user code ---------------------------------------------------------*/
+ /* USER CODE BEGIN 0 */
+
+ /* USER CODE END 0 */
+
+ /**
   * @brief  The application entry point.
   * @retval int
   */
-int main(void)
-{
-  /* USER CODE BEGIN 1 */
-  OS_ERR err;
-  CPU_SR_ALLOC();
+ int main(void)
+ {
+   /* USER CODE BEGIN 1 */
+   OS_ERR err;
+   CPU_SR_ALLOC();
 
-  /* USER CODE END 1 */
+   /* USER CODE END 1 */
 
-  /* Enable I-Cache---------------------------------------------------------*/
-  SCB_EnableICache();
+   /* Enable I-Cache---------------------------------------------------------*/
+   SCB_EnableICache();
 
-  /* Enable D-Cache---------------------------------------------------------*/
-  SCB_EnableDCache();
+   /* Enable D-Cache---------------------------------------------------------*/
+   SCB_EnableDCache();
 
-  /* MCU Configuration--------------------------------------------------------*/
+   /* MCU Configuration--------------------------------------------------------*/
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+   HAL_Init();
 
-  /* USER CODE BEGIN Init */
+   /* USER CODE BEGIN Init */
 
-  /* USER CODE END Init */
+   /* USER CODE END Init */
 
-  /* Configure the system clock */
-  SystemClock_Config();
+   /* Configure the system clock */
+   SystemClock_Config();
 
-  /* USER CODE BEGIN SysInit */
-  //HAL_NVIC_EnableIRQ(SysTick_IRQn);
-  /* USER CODE END SysInit */
+   /* USER CODE BEGIN SysInit */
+   // HAL_NVIC_EnableIRQ(SysTick_IRQn);
+   /* USER CODE END SysInit */
 
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  /* USER CODE BEGIN 2 */
-  LED_Init();
-  /* USER CODE END 2 */
+   /* Initialize all configured peripherals */
+   MX_GPIO_Init();
+   /* USER CODE BEGIN 2 */
+   LED_Init();
+   /* USER CODE END 2 */
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  OSCfg_Init();
-  OSInit(&err);
+   /* Infinite loop */
+   /* USER CODE BEGIN WHILE */
+   OSCfg_Init();
+   OSInit(&err);
+   OSSchedRoundRobinCfg(OS_TRUE, 200, &err);
 
-  CPU_CRITICAL_ENTER(); //进入临界�???
-  OSTaskCreate((OS_TCB *)&LedTaskTCB,                                                   //任务控制�???
-               (CPU_CHAR *)"led task",                                                  //任务名字
-               (OS_TASK_PTR)led_task,                                                   //任务函数
-               (void *)0,                                                               //传�?�给任务函数的参�???
-               (OS_PRIO)LED_TASK_PRIO,                                                  //任务优先�???
-               (CPU_STK *)&LED_TASK_STK[0],                                             //任务堆栈基地�???
-               (CPU_STK_SIZE)LED_STK_SIZE / 10,                                         //任务堆栈深度限位
-               (CPU_STK_SIZE)LED_STK_SIZE,                                              //任务堆栈大小
-               (OS_MSG_QTY)0,                                                           //任务内部消息队列能够接收的最大消息数�???,�???0时禁止接收消�???
-               (OS_TICK)0,                                                              //当使能时间片轮转时的时间片长度，�???0时为默认长度�???
-               (void *)0,                                                               //用户补充的存储区
-               (OS_OPT)OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR | OS_OPT_TASK_SAVE_FP, //任务选项,为了保险起见，所有任务都保存浮点寄存器的�???
-               (OS_ERR *)&err);
-  CPU_CRITICAL_EXIT(); //�???出临界区_err);
+   CPU_CRITICAL_ENTER();                                                                 //进入临界�???
+   OSTaskCreate((OS_TCB *)&start_task_tcb,                                               //任务控制
+                (CPU_CHAR *)"start task",                                                //任务名字
+                (OS_TASK_PTR)start_task,                                                 //任务函数
+                (void *)0,                                                               //传给任务函数的参
+                (OS_PRIO)START_TASK_PRIO,                                                //任务优先
+                (CPU_STK *)&start_task_stk[0],                                           //任务堆栈基地
+                (CPU_STK_SIZE)START_STK_SIZE / 10,                                       //任务堆栈深度限位
+                (CPU_STK_SIZE)START_STK_SIZE,                                            //任务堆栈大小
+                (OS_MSG_QTY)0,                                                           //任务内部消息队列能够接收的最大消息数
+                (OS_TICK)0,                                                              //当使能时间片轮转时的时间片
+                (void *)0,                                                               //用户补充的存储区
+                (OS_OPT)OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR | OS_OPT_TASK_SAVE_FP, //任务选项,为了保险起见，所有任务都保存浮点寄存器的
+                (OS_ERR *)&err);
+   CPU_CRITICAL_EXIT();
 
-  OSStart(&err);
+   OSStart(&err);
 
-  while (1)
-  {
-    /* USER CODE END WHILE */
+   while (1)
+   {
+     /* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
+     /* USER CODE BEGIN 3 */
+   }
+   /* USER CODE END 3 */
 }
 
 /**
@@ -214,7 +232,60 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void led_task(void *args)
+void start_task(void *args)
+{
+  OS_ERR err;
+  CPU_SR_ALLOC();
+
+  CPU_CRITICAL_ENTER();
+ /*  OSTaskCreate((OS_TCB *)&LedTaskTCB,                                                   //任务控制�???
+               (CPU_CHAR *)"led task",                                                  //任务名字
+               (OS_TASK_PTR)led_task,                                                   //任务函数
+               (void *)0,                                                               //传�?�给任务函数的参�???
+               (OS_PRIO)LED_TASK_PRIO,                                                  //任务优先�???
+               (CPU_STK *)&LED_TASK_STK[0],                                             //任务堆栈基地�???
+               (CPU_STK_SIZE)LED_STK_SIZE / 10,                                         //任务堆栈深度限位
+               (CPU_STK_SIZE)LED_STK_SIZE,                                              //任务堆栈大小
+               (OS_MSG_QTY)0,                                                           //任务内部消息队列能够接收的最大消息数�???,�???0时禁止接收消�???
+               (OS_TICK)0,                                                              //当使能时间片轮转时的时间片长度，�???0时为默认长度�???
+               (void *)0,                                                               //用户补充的存储区
+               (OS_OPT)OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR | OS_OPT_TASK_SAVE_FP, //任务选项,为了保险起见，所有任务都保存浮点寄存器的�???
+               (OS_ERR *)&err); */
+
+  OSTaskCreate((OS_TCB *)&Led1TaskTCB,                                                   //任务控制�???
+               (CPU_CHAR *)"led1 task",                                                  //任务名字
+               (OS_TASK_PTR)led1_task,                                                   //任务函数
+               (void *)0,                                                               //传�?�给任务函数的参�???
+               (OS_PRIO)LED1_TASK_PRIO,                                                  //任务优先�???
+               (CPU_STK *)&LED1_TASK_STK[0],                                             //任务堆栈基地�???
+               (CPU_STK_SIZE)LED1_STK_SIZE / 10,                                         //任务堆栈深度限位
+               (CPU_STK_SIZE)LED1_STK_SIZE,                                              //任务堆栈大小
+               (OS_MSG_QTY)0,                                                           //任务内部消息队列能够接收的最大消息数�???,�???0时禁止接收消�???
+               (OS_TICK)0,                                                              //当使能时间片轮转时的时间片长度，�???0时为默认长度�???
+               (void *)0,                                                               //用户补充的存储区
+               (OS_OPT)OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR | OS_OPT_TASK_SAVE_FP, //任务选项,为了保险起见，所有任务都保存浮点寄存器的�???
+               (OS_ERR *)&err);
+
+  OSTaskCreate((OS_TCB *)&Led2TaskTCB,                                                   //任务控制�???
+               (CPU_CHAR *)"led2 task",                                                  //任务名字
+               (OS_TASK_PTR)led2_task,                                                   //任务函数
+               (void *)0,                                                               //传�?�给任务函数的参�???
+               (OS_PRIO)LED2_TASK_PRIO,                                                  //任务优先�???
+               (CPU_STK *)&LED2_TASK_STK[0],                                             //任务堆栈基地�???
+               (CPU_STK_SIZE)LED2_STK_SIZE / 10,                                         //任务堆栈深度限位
+               (CPU_STK_SIZE)LED2_STK_SIZE,                                              //任务堆栈大小
+               (OS_MSG_QTY)0,                                                           //任务内部消息队列能够接收的最大消息数�???,�???0时禁止接收消�???
+               (OS_TICK)0,                                                              //当使能时间片轮转时的时间片长度，�???0时为默认长度�???
+               (void *)0,                                                               //用户补充的存储区
+               (OS_OPT)OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR | OS_OPT_TASK_SAVE_FP, //任务选项,为了保险起见，所有任务都保存浮点寄存器的�???
+               (OS_ERR *)&err);
+  CPU_CRITICAL_EXIT(); //退出临界区_err;
+
+  OSTaskDel((OS_TCB *)0, &err); //删除start_task任务自身
+}
+
+
+/* void led_task(void *args)
 {
   OS_ERR err;
 
@@ -225,6 +296,38 @@ void led_task(void *args)
     OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_HMSM_STRICT, &err);
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+  }
+} */
+
+
+void led1_task(void *args)
+{
+  OS_ERR err;
+  uint32_t i = 0;
+
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);   // LED1对应引脚PB0拉高，灭，等同于LED1(1)
+  while (1)
+  {
+    while(i++ != 0xFFFFFF);
+    i = 0;
+    //OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_HMSM_STRICT, &err);
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+  }
+}
+
+
+void led2_task(void *args)
+{
+  OS_ERR err;
+  uint32_t i = 0;
+
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET); // LED0对应引脚PB1拉低，亮，等同于LED0(0)
+  while (1)
+  {
+    while (i++ != 0xFFFFFF);
+    i = 0;
+    //OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_HMSM_STRICT, &err);
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
   }
 }
 /* USER CODE END 4 */
