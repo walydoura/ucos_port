@@ -64,6 +64,14 @@ void USART1_IRQHandler()
 
 void UART1_IDLE_RxEventCallback(struct __UART_HandleTypeDef *huart, uint16_t Pos)
 {
-    HAL_UART_Transmit_IT(huart, aRxBuffer, Pos);
+    if (Pos == RXBUFFERSIZE) /*接收缓冲区满（收到了指定的字节数）*/
+    {
+        HAL_UART_Transmit_IT(huart, "FULL", 4);
+    }
+    else if (Pos < RXBUFFERSIZE) /*空闲字符中断（缓冲区未满）*/
+    {
+        HAL_UART_Transmit_IT(huart, "IDEL", 4);
+    }
+    
     HAL_UARTEx_ReceiveToIdle_IT(huart, aRxBuffer, RXBUFFERSIZE);
 }
