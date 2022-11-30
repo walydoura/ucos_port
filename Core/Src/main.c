@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #define OS_GLOBALS
 #include "led.h"
+#include "usart.h"
 #include "os.h"
 /* USER CODE END Includes */
 
@@ -122,6 +123,7 @@ void start_task(void *args);          //任务函数
    MX_GPIO_Init();
    /* USER CODE BEGIN 2 */
    LED_Init();
+   uart_init(115200);
    /* USER CODE END 2 */
 
    /* Infinite loop */
@@ -308,6 +310,7 @@ void led1_task(void *args)
   {
     OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_HMSM_STRICT, &err);
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+    //HAL_UART_Transmit_IT(&UART1_Handler, (uint8_t *)"led1_task\r\n", 11);
   }
 }
 
@@ -321,6 +324,7 @@ void led2_task(void *args)
   {
     OSTimeDlyHMSM(0, 0, 1, 0, OS_OPT_TIME_HMSM_STRICT, &err);
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
+    //HAL_UART_Transmit_IT(&UART1_Handler, (uint8_t *)"led2_task\r\n", 11);
   }
 }
 /* USER CODE END 4 */

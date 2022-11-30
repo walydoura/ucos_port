@@ -36,9 +36,7 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
-Core/Src/main.c \
-Core/Src/stm32f7xx_it.c \
-Core/Src/stm32f7xx_hal_msp.c \
+${wildcard Core/Src/*.c} \
 Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.c \
 Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim.c \
 Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim_ex.c \
@@ -55,8 +53,9 @@ Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.c \
 Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c.c \
 Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c_ex.c \
 Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_exti.c \
-Core/Src/system_stm32f7xx.c \
-BSP/led.c \
+Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart.c \
+Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart_ex.c \
+${wildcard BSP/*.c} \
 ${wildcard ucosiii/uC-OS3-3.08.01/Source/*.c} \
 ${wildcard ucosiii/uC-OS3-3.08.01/Ports/ARM-Cortex-M/ARMv7-M/*.c} \
 ${wildcard ucosiii/uC-OS3-3.08.01/Ports/ARM-Cortex-M/ARMv7-M/GNU/*.c} \
@@ -201,7 +200,7 @@ $(BUILD_DIR):
 # clean up
 #######################################
 clean:
-	-rm -fR $(BUILD_DIR)
+	-rm -R $(BUILD_DIR)
   
 #######################################
 # dependencies
