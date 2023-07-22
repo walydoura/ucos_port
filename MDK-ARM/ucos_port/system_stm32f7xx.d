@@ -1,0 +1,10 @@
+ucos_port\system_stm32f7xx.o: ../Core/Src/system_stm32f7xx.c
+ucos_port\system_stm32f7xx.o: ../Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f7xx.h
+ucos_port\system_stm32f7xx.o: ../Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f767xx.h
+ucos_port\system_stm32f7xx.o: ../Drivers/CMSIS/Include/core_cm7.h
+ucos_port\system_stm32f7xx.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+ucos_port\system_stm32f7xx.o: ../Drivers/CMSIS/Include/cmsis_version.h
+ucos_port\system_stm32f7xx.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+ucos_port\system_stm32f7xx.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+ucos_port\system_stm32f7xx.o: ../Drivers/CMSIS/Include/mpu_armv7.h
+ucos_port\system_stm32f7xx.o: ../Drivers/CMSIS/Device/ST/STM32F7xx/Include/system_stm32f7xx.h

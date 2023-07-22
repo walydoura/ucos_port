@@ -318,7 +318,7 @@ HAL_StatusTypeDef HAL_RCC_DeInit(void)
   if (HAL_InitTick(uwTickPrio) != HAL_OK)
   {
     return HAL_ERROR;
-  } 
+  }
   else
   {
     return HAL_OK;

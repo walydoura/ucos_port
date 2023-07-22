@@ -1,0 +1,13 @@
+--cpu Cortex-M7.fp.dp
+"ucos_port\startup_stm32f767xx.o"
+"ucos_port\main.o"
+"ucos_port\stm32f7xx_it.o"
+"ucos_port\stm32f7xx_ll_gpio.o"
+"ucos_port\stm32f7xx_ll_rcc.o"
+"ucos_port\stm32f7xx_ll_utils.o"
+"ucos_port\stm32f7xx_ll_exti.o"
+"ucos_port\system_stm32f7xx.o"
+--strict --scatter "ucos_port\ucos_port.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "ucos_port.map" -o ucos_port\ucos_port.axf
