@@ -56,7 +56,7 @@ extern "C" {
   */
 
 /* Max delay can be used in LL_mDelay */
-#define LL_MAX_DELAY                  0xFFFFFFFFU
+#define LL_MAX_DELAY                  0x1U
 
 /**
  * @brief Unique device ID register base address

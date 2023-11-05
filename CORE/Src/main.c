@@ -18,7 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#include "includes.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -36,12 +36,15 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#define QSPI_FLASH_SIZE   (32 * 1024 * 1024)	//FLASH 大小为32M字节
+#define QSPI_FLASH_BUFF_LEN  64
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+static uint8_t sTxBuff[QSPI_FLASH_BUFF_LEN];
+static uint8_t sRxBuff[QSPI_FLASH_BUFF_LEN];
 
 /* USER CODE END PV */
 
@@ -99,6 +102,23 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
+  QSPI_Init();	  //初始化QSPI		
+  //delay_init(216);			//延时初始化  
+  W25QXX_Init();				//W25QXX初始化
+
+  while (W25QXX_ReadID() != W25Q256)								//检测不到W25Q256
+  {
+	  //delay_ms(500);
+      LL_mDelay(500);
+  }
+  //delay_ms(500);
+  LL_mDelay(500);
+
+  strncpy((char*)sTxBuff, "stm32, You Will Be Better", QSPI_FLASH_BUFF_LEN);
+  W25QXX_Write(sTxBuff, QSPI_FLASH_SIZE - 100, strlen((char*)sTxBuff));		//从倒数第100个地址处开始,写入SIZE长度的数据
+  //delay_ms(500);
+  LL_mDelay(500);
+  W25QXX_Read(sRxBuff, QSPI_FLASH_SIZE - 100, strlen((char*)sTxBuff));					//从倒数第100个地址处开始,读出SIZE个字节
 
   /* USER CODE END 2 */
 
