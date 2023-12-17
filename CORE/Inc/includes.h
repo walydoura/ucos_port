@@ -16,7 +16,7 @@
 #include "stm32f7xx_ll_pwr.h"
 #include "stm32f7xx_ll_dma.h"
 #include "stm32f7xx_ll_gpio.h"
-
+#include "stm32f7xx_ll_i2c.h"
 /*HAL Lib*/
 #include "stm32f7xx_hal.h"
 

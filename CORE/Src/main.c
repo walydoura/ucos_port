@@ -18,7 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "includes.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -43,7 +43,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-static uint8_t sTxBuff[QSPI_FLASH_BUFF_LEN];
+static uint8_t sTxBuff[QSPI_FLASH_BUFF_LEN]="AT24C02 I2C TEST,OK";
 static uint8_t sRxBuff[QSPI_FLASH_BUFF_LEN];
 
 /* USER CODE END PV */
@@ -51,6 +51,7 @@ static uint8_t sRxBuff[QSPI_FLASH_BUFF_LEN];
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_I2C2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -101,24 +102,27 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
   QSPI_Init();	  //初始化QSPI		
   //delay_init(216);			//延时初始化  
   W25QXX_Init();				//W25QXX初始化
 
-  while (W25QXX_ReadID() != W25Q256)								//检测不到W25Q256
-  {
-	  //delay_ms(500);
-      LL_mDelay(500);
-  }
-  //delay_ms(500);
-  LL_mDelay(500);
+  AT24C02_WriteBytes(0, strlen(sTxBuff)+1, sTxBuff);
+  AT24C02_ReadBytes(0, strlen(sTxBuff)+1, sRxBuff);
+  //while (W25QXX_ReadID() != W25Q256)								//检测不到W25Q256
+  //{
+	 // //delay_ms(500);
+  //    LL_mDelay(500);
+  //}
+  ////delay_ms(500);
+  //LL_mDelay(500);
 
-  strncpy((char*)sTxBuff, "stm32, You Will Be Better", QSPI_FLASH_BUFF_LEN);
-  W25QXX_Write(sTxBuff, QSPI_FLASH_SIZE - 100, strlen((char*)sTxBuff));		//从倒数第100个地址处开始,写入SIZE长度的数据
-  //delay_ms(500);
-  LL_mDelay(500);
-  W25QXX_Read(sRxBuff, QSPI_FLASH_SIZE - 100, strlen((char*)sTxBuff));					//从倒数第100个地址处开始,读出SIZE个字节
+  //strncpy((char*)sTxBuff, "stm32, You Will Be Better", QSPI_FLASH_BUFF_LEN);
+  //W25QXX_Write(sTxBuff, QSPI_FLASH_SIZE - 100, strlen((char*)sTxBuff));		//从倒数第100个地址处开始,写入SIZE长度的数据
+  ////delay_ms(500);
+  //LL_mDelay(500);
+  //W25QXX_Read(sRxBuff, QSPI_FLASH_SIZE - 100, strlen((char*)sTxBuff));					//从倒数第100个地址处开始,读出SIZE个字节
 
   /* USER CODE END 2 */
 
@@ -175,6 +179,73 @@ void SystemClock_Config(void)
   }
   LL_Init1msTick(216000000);
   LL_SetSystemCoreClock(216000000);
+}
+
+/**
+  * @brief I2C2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C2_Init(void)
+{
+
+  /* USER CODE BEGIN I2C2_Init 0 */
+
+  /* USER CODE END I2C2_Init 0 */
+
+  LL_I2C_InitTypeDef I2C_InitStruct = {0};
+
+  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  LL_RCC_SetI2CClockSource(LL_RCC_I2C2_CLKSOURCE_PCLK1);
+
+  LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOH);
+  /**I2C2 GPIO Configuration
+  PH4   ------> I2C2_SCL
+  PH5   ------> I2C2_SDA
+  */
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_4;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
+  GPIO_InitStruct.Alternate = LL_GPIO_AF_4;
+  LL_GPIO_Init(GPIOH, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_5;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
+  GPIO_InitStruct.Alternate = LL_GPIO_AF_4;
+  LL_GPIO_Init(GPIOH, &GPIO_InitStruct);
+
+  /* Peripheral clock enable */
+  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_I2C2);
+
+  /* USER CODE BEGIN I2C2_Init 1 */
+
+  /* USER CODE END I2C2_Init 1 */
+
+  /** I2C Initialization
+  */
+  LL_I2C_DisableAutoEndMode(I2C2);
+  LL_I2C_SetOwnAddress2(I2C2, 0, LL_I2C_OWNADDRESS2_NOMASK);
+  LL_I2C_DisableOwnAddress2(I2C2);
+  LL_I2C_DisableGeneralCall(I2C2);
+  LL_I2C_EnableClockStretching(I2C2);
+  I2C_InitStruct.PeripheralMode = LL_I2C_MODE_I2C;
+  I2C_InitStruct.Timing = 0x20404768;
+  I2C_InitStruct.AnalogFilter = LL_I2C_ANALOGFILTER_ENABLE;
+  I2C_InitStruct.DigitalFilter = 0;
+  I2C_InitStruct.OwnAddress1 = 0;
+  I2C_InitStruct.TypeAcknowledge = LL_I2C_ACK;
+  I2C_InitStruct.OwnAddrSize = LL_I2C_OWNADDRESS1_7BIT;
+  LL_I2C_Init(I2C2, &I2C_InitStruct);
+  /* USER CODE BEGIN I2C2_Init 2 */
+
+  /* USER CODE END I2C2_Init 2 */
+
 }
 
 /**
