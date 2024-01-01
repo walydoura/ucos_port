@@ -18,7 +18,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#define   OS_GLOBALS
+#include "os.h"
+#include "comm.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -64,7 +66,8 @@ static void MX_GPIO_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+    OS_ERR Err;
+	CPU_SR_ALLOC();
   /* USER CODE END 1 */
 
   /* Enable I-Cache---------------------------------------------------------*/
@@ -99,7 +102,24 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
+  OSInit(&Err);
+  CPU_CRITICAL_ENTER();
+  OSTaskCreate(&gCommTaskTCB,
+	  "CommTask",
+	  comm_task,
+	  0,
+	  COMM_TASK_PRIO,
+	  gCommTaskSTK,
+	  COMM_TASK_STK_SIZE/10,
+	  COMM_TASK_STK_SIZE,
+	  0,
+	  0,
+	  0,
+	  OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR | OS_OPT_TASK_SAVE_FP,
+	  &Err);
+  CPU_CRITICAL_EXIT();
 
+  OSStart(&Err);
   /* USER CODE END 2 */
 
   /* Infinite loop */
